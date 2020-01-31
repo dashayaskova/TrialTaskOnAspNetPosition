@@ -1,5 +1,6 @@
 ﻿using DbEntities;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Threading.Tasks;
 
 namespace DbProvider.Context
@@ -11,5 +12,6 @@ namespace DbProvider.Context
 		DbSet<Item> Items { get; }
 		DbSet<Delivery> Delivery { get; }
 		Task<int> SaveChangesAsync();
+		DbEntityEntry Entry(object entity);
 	}
 }

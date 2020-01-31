@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace DbEntities
 {
 	[DataContract]
-	public class Delivery
+	public class Delivery: IDbEntity
 	{
 		[DataMember]
 		private long _id;

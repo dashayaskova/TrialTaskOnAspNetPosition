@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace ShopApiTestTask.Services
 {
-	public class StoreService: IStoreService
+	public class StoreService : IStoreService
 	{
 		private IStoreContext _context = new StoreContext();
-		private IMapperService _mapperService = new MapperService(new StoreToStoreEntityMapper(), 
+		private IMapperService _mapperService = new MapperService(new StoreToStoreEntityMapper(),
 			new DeliveryToDeliveryEntityMapper(), new ItemToItemEntityService());
 
 		#region Constructors
@@ -51,53 +51,26 @@ namespace ShopApiTestTask.Services
 		{
 			var newdbStore = _mapperService.Map(store);
 			var dbStore = await GetStore(store);
-
-			dbStore.Country = newdbStore.Country;
-			dbStore.Currency = newdbStore.Currency;
-
-			UpdateStoreDeliveries(newdbStore.Deliveries, dbStore);
+			_context.Entry(dbStore).CurrentValues.SetValues(newdbStore);
+			UpdateStoreDeliveries(newdbStore, dbStore);
 			//UpdateItems
-
 			await _context.SaveChangesAsync();
 			return dbStore;
 		}
 
-		private void UpdateStoreDeliveries(List<DeliveryStore> newDeliveries, Store storeToUpdate)
+		private void UpdateStoreDeliveries(Store newStore, Store oldStore)
 		{
-			if (newDeliveries == null)
+			foreach (var delStore in oldStore.Deliveries.ToList())
+				if (!newStore.Deliveries.Any(d => d.DeliveryId == delStore.DeliveryId))
+					_context.DeliveryStores.Remove(delStore);
+
+			foreach (var newDelStore in newStore.Deliveries)
 			{
-				storeToUpdate.Deliveries = new List<DeliveryStore>();
-				return;
-			}
-
-			var newDeliveriesHS = new HashSet<long>(newDeliveries.Select(o => o.DeliveryId));
-			var storeDeliveriesHS = new HashSet<long>(storeToUpdate.Deliveries.Select(o => o.DeliveryId));
-
-			foreach (var delivery in _context.Delivery)
-			{	
-				if (newDeliveriesHS.Contains(delivery.Id))
-				{
-					var delStore = newDeliveries.FirstOrDefault(o => o.DeliveryId == delivery.Id);
-
-					if (!storeDeliveriesHS.Contains(delivery.Id))
-					{
-						storeToUpdate.Deliveries.Add(delStore);
-					}
-					else
-					{
-						var foundDel = storeToUpdate.Deliveries.FirstOrDefault(o => o.DeliveryId == delivery.Id);
-						foundDel.Description = delStore.Description;
-						foundDel.Price = delStore.Price;
-					}
-				}
+				var dbDelStore = oldStore.Deliveries.SingleOrDefault(d => d.DeliveryId == newDelStore.DeliveryId);
+				if (dbDelStore != null)
+					_context.Entry(dbDelStore).CurrentValues.SetValues(newDelStore);
 				else
-				{
-					if (storeDeliveriesHS.Contains(delivery.Id))
-					{
-						storeToUpdate.Deliveries.Remove(
-							storeToUpdate.Deliveries.First(o => o.DeliveryId == delivery.Id));
-					}
-				}
+					oldStore.Deliveries.Add(newDelStore);
 			}
 		}
 	}

@@ -28,7 +28,9 @@ namespace ShopApiTestTask.Mappers
 
 			foreach (var s in entity.Deliveries)
 			{
-				store.Deliveries.Add(Map(s));
+				var newSt = Map(s);
+				newSt.StoreName = store.Name;
+				store.Deliveries.Add(newSt);
 			}
 
 			foreach (var i in entity.Items)

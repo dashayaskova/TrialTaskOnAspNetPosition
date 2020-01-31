@@ -1,9 +1,10 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace DbEntities
 {
 	[DataContract(IsReference =true)]
-	public class DeliveryStore
+	public class DeliveryStore: IDbEntity
 	{
 		[DataMember]
 		private long _deliveryId;
@@ -23,7 +24,7 @@ namespace DbEntities
 		[DataMember]
 		private Store _store;
 
-		public long DeliveryId { get => _deliveryId; set => _deliveryId = value; }
+		public long DeliveryId { get => _deliveryId; set => _deliveryId = value; } 
 		public string StoreName { get => _storeName; set => _storeName = value; }
 		public Delivery Delivery { get => _delivery; set => _delivery = value; }
 		public Store Store { get => _store; set => _store = value; }

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace DbEntities
 {
 	[DataContract]
-	public class Store
+	public class Store: IDbEntity
 	{
 		[DataMember]
 		private string _name;
