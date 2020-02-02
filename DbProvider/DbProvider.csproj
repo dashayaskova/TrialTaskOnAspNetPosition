@@ -61,6 +61,14 @@
     <Compile Include="Migrations\202001291711405_FirstMigration.designer.cs">
       <DependentUpon>202001291711405_FirstMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001311647467_State.cs" />
+    <Compile Include="Migrations\202001311647467_State.designer.cs">
+      <DependentUpon>202001311647467_State.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001311657126_ignoreProp.cs" />
+    <Compile Include="Migrations\202001311657126_ignoreProp.designer.cs">
+      <DependentUpon>202001311657126_ignoreProp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -77,6 +85,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202001291711405_FirstMigration.resx">
       <DependentUpon>202001291711405_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001311647467_State.resx">
+      <DependentUpon>202001311647467_State.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001311657126_ignoreProp.resx">
+      <DependentUpon>202001311657126_ignoreProp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

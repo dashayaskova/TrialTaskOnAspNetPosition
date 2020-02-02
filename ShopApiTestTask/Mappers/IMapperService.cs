@@ -1,11 +1,10 @@
-﻿using DbEntities;
-using ShopApiTestTask.Models;
-
+﻿using ShopApiTestTask.Mappers.DeliveryService;
+using ShopApiTestTask.Mappers.ItemService;
+using ShopApiTestTask.Mappers.StoreService;
 
 namespace ShopApiTestTask.Mappers
 {
-	interface IMapperService : IMapper<StoreView, Store>, IMapper<DeliveryView, DeliveryStore>,
-		IMapper<ItemView, Item>
+	public interface IMapperService : IDeliveryMapperService, IStoreMapperService, IItemMapperService
 	{
 	}
 }

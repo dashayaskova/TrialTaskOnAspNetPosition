@@ -10,6 +10,7 @@ namespace DbProvider.Configurations
 		{
 			ToTable("item");
 			HasKey(item => item.Id);
+			Ignore(item => item.State);
 			Property(item => item.Id).HasColumnName("item_id").IsRequired();
 			Property(item => item.Category).HasMaxLength(50).HasColumnName("category");
 			Property(item => item.Name).HasMaxLength(100).HasColumnName("name").IsRequired();

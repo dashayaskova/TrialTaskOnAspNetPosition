@@ -1,8 +1,9 @@
 ﻿using DbEntities;
 using DbProvider.Context;
 using ShopApiTestTask.Mappers;
+using ShopApiTestTask.Mappers.DeliveryService;
+using ShopApiTestTask.Mappers.ItemService;
 using ShopApiTestTask.Models;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,8 +13,11 @@ namespace ShopApiTestTask.Services
 	public class StoreService : IStoreService
 	{
 		private IStoreContext _context = new StoreContext();
-		private IMapperService _mapperService = new MapperService(new StoreToStoreEntityMapper(),
-			new DeliveryToDeliveryEntityMapper(), new ItemToItemEntityService());
+		private IMapperService _mapperService = new MapperService(
+			new DeliveryMapperService(new DeliveryEntityToDeliveryMapper(), new DeliveryToDeliveryEntityMapper()),
+			new StoreMapperService(new StoreEntityToStoreMapper(), new StoreToStoreEntityMapper()),
+			new ItemMapperService(new ItemEntityToItemMapper(), new ItemToItemEntityMapper())
+			);
 
 		#region Constructors
 		public StoreService() { }
@@ -25,12 +29,12 @@ namespace ShopApiTestTask.Services
 
 		#endregion
 
-		public async Task<bool> StoreExists(StoreView store)
+		public async Task<bool> StoreExists(StoreViewModel store)
 		{
 			return await _context.Stores.CountAsync(o => o.Name == store.Name) != 0;
 		}
 
-		public async Task<Store> GetStore(StoreView store)
+		public async Task<Store> GetStore(StoreViewModel store)
 		{
 			return await _context.Stores
 				.Include(o => o.Deliveries)
@@ -38,39 +42,51 @@ namespace ShopApiTestTask.Services
 				.FirstOrDefaultAsync(o => o.Name == store.Name);
 		}
 
-		public async Task<Store> AddStore(StoreView store)
+		public async Task<StoreViewModel> AddStore(StoreViewModel store)
 		{
 			var newStore = _mapperService.Map(store);
 			var output = _context.Stores.Add(newStore);
 			await _context.SaveChangesAsync();
-
-			return output;
+			return _mapperService.Map(output);
 		}
 
-		public async Task<Store> EditStore(StoreView store)
+		public async Task<StoreViewModel> EditStore(StoreViewModel store) 
 		{
-			var newdbStore = _mapperService.Map(store);
-			var dbStore = await GetStore(store);
-			_context.Entry(dbStore).CurrentValues.SetValues(newdbStore);
-			UpdateStoreDeliveries(newdbStore, dbStore);
-			//UpdateItems
+			var newDbStore = _mapperService.Map(store);
+			var existedDbStore = await GetStore(store);
+			UpdateEntities(newDbStore, existedDbStore);
 			await _context.SaveChangesAsync();
-			return dbStore;
+			return _mapperService.Map(newDbStore);
 		}
 
-		private void UpdateStoreDeliveries(Store newStore, Store oldStore)
+		private void UpdateEntities(Store newDbStore, Store existedDbStore)
 		{
-			foreach (var delStore in oldStore.Deliveries.ToList())
-				if (!newStore.Deliveries.Any(d => d.DeliveryId == delStore.DeliveryId))
-					_context.DeliveryStores.Remove(delStore);
+			_context.Entry(existedDbStore).CurrentValues.SetValues(newDbStore);
 
-			foreach (var newDelStore in newStore.Deliveries)
+			foreach (var newDel in newDbStore.Deliveries)
 			{
-				var dbDelStore = oldStore.Deliveries.SingleOrDefault(d => d.DeliveryId == newDelStore.DeliveryId);
-				if (dbDelStore != null)
-					_context.Entry(dbDelStore).CurrentValues.SetValues(newDelStore);
-				else
-					oldStore.Deliveries.Add(newDelStore);
+				var curDel = existedDbStore.Deliveries.SingleOrDefault(o => o.DeliveryId == newDel.DeliveryId);
+				UpdateEntity(newDel, curDel);
+			}
+
+			foreach (var newItem in newDbStore.Items)
+			{
+				var curItem = existedDbStore.Items.SingleOrDefault(d => d.Id == newItem.Id);
+				UpdateEntity(newItem, curItem);
+			}
+		}
+
+		private void UpdateEntity(IStateObject newEntity, IStateObject oldEntity)
+		{
+			if (oldEntity == null && newEntity.State == State.Added)
+				_context.Entry(newEntity).State = EntityState.Added;
+
+			if (oldEntity != null)
+			{
+				if (newEntity.State == State.Deleted)
+					_context.Entry(oldEntity).State = EntityState.Deleted;
+				else if (newEntity.State == State.Modified)
+					_context.Entry(oldEntity).CurrentValues.SetValues(newEntity);
 			}
 		}
 	}

@@ -7,9 +7,9 @@ using System.Web;
 
 namespace ShopApiTestTask.Mappers
 {
-	public class StoreToStoreEntityMapper : IMapper<StoreView, Store>
+	public class StoreToStoreEntityMapper : IMapper<StoreViewModel, Store>
 	{
-		public Store Map(StoreView store)
+		public Store Map(StoreViewModel store)
 		{
 			var dbStore = new Store();
 			dbStore.Name = store.Name;

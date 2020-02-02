@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace DbEntities
 {
 	[DataContract(IsReference =true)]
-	public class DeliveryStore: IDbEntity
+	public class DeliveryStore: IStateObject
 	{
 		[DataMember]
 		private long _deliveryId;
@@ -24,12 +24,16 @@ namespace DbEntities
 		[DataMember]
 		private Store _store;
 
+		[IgnoreDataMember]
+		private State _state;
+
 		public long DeliveryId { get => _deliveryId; set => _deliveryId = value; } 
 		public string StoreName { get => _storeName; set => _storeName = value; }
 		public Delivery Delivery { get => _delivery; set => _delivery = value; }
 		public Store Store { get => _store; set => _store = value; }
 		public string Description { get => _description; set => _description = value; }
 		public decimal Price { get => _price; set => _price = value; }
+		public State State { get => _state; set => _state = value; }
 
 		public DeliveryStore()
 		{

@@ -28,7 +28,7 @@ namespace ShopApiTestTask.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("api/store/create")]
-		public async Task<IHttpActionResult> AddStore([FromBody]StoreView store)
+		public async Task<IHttpActionResult> AddStore([FromBody]StoreViewModel store)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest("Invalid data.");
@@ -46,7 +46,7 @@ namespace ShopApiTestTask.Controllers
 				return BadRequest("The item was not added.");
 
 			//return type is db object or view?
-			return Ok();
+			return Ok(newStore);
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace ShopApiTestTask.Controllers
 		/// <returns></returns>
 		[HttpPut]
 		[Route("api/store/edit")]
-		public async Task<IHttpActionResult> EditStore([FromBody]StoreView store)
+		public async Task<IHttpActionResult> EditStore([FromBody]StoreViewModel store)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest("Invalid data.");
@@ -67,7 +67,7 @@ namespace ShopApiTestTask.Controllers
 
 			var newStore = await _storeService.EditStore(store);
 
-			return Ok();
+			return Ok(newStore);
 		}
 	}
 }

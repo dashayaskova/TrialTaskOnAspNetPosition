@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace DbEntities
 {
 	[DataContract]
-	public class Store: IDbEntity
+	public class Store
 	{
 		[DataMember]
 		private string _name;
@@ -30,6 +30,7 @@ namespace DbEntities
 		public List<Item> Items { get => _items; set => _items = value; }
 		public List<DeliveryStore> Deliveries { get => _deliveries; set => _deliveries = value; }
 		public string Username { get => _username; set => _username = value; }
+
 
 		public Store()
 		{

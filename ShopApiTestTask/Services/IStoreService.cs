@@ -7,9 +7,9 @@ namespace ShopApiTestTask.Services
 {
 	public interface IStoreService
 	{
-		Task<Store> AddStore(StoreView store);
-		Task<Store> EditStore(StoreView store);
-		Task<bool> StoreExists(StoreView store);
-		Task<Store> GetStore(StoreView store);
+		Task<StoreViewModel> AddStore(StoreViewModel store);
+		Task<StoreViewModel> EditStore(StoreViewModel store);
+		Task<bool> StoreExists(StoreViewModel store);
+		Task<Store> GetStore(StoreViewModel store);
 	}
 }

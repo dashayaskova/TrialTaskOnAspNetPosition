@@ -13,5 +13,6 @@ namespace DbProvider.Context
 		DbSet<Delivery> Delivery { get; }
 		Task<int> SaveChangesAsync();
 		DbEntityEntry Entry(object entity);
+		DbChangeTracker ChangeTracker { get; }
 	}
 }

@@ -11,6 +11,7 @@ namespace DbProvider.Configurations
 			HasKey(delivery => delivery.Id);
 			Property(delivery => delivery.Id).HasColumnName("delivery_id").IsRequired();
 			Property(delivery => delivery.Name).HasMaxLength(50).HasColumnName("name").IsRequired();
+			Ignore(delivery => delivery.State);
 		}
 	}
 }

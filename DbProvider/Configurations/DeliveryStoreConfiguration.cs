@@ -17,6 +17,7 @@ namespace DbProvider.Configurations
 				.HasForeignKey(ds => ds.DeliveryId);
 			HasRequired(ds => ds.Store).WithMany(s => s.Deliveries)
 				.HasForeignKey(ds => ds.StoreName);
+			Ignore(ds => ds.State);
 		}
 	}
 }

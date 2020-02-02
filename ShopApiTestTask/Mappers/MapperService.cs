@@ -1,54 +1,81 @@
 ﻿using DbEntities;
 using ShopApiTestTask.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using ShopApiTestTask.Mappers.DeliveryService;
+using ShopApiTestTask.Mappers.StoreService;
+using ShopApiTestTask.Mappers.ItemService;
 
 namespace ShopApiTestTask.Mappers
 {
 	public class MapperService : IMapperService
 	{
-		private readonly IMapper<StoreView, Store> _storeToStoreEntityMapper;
-		private readonly IMapper<DeliveryView, DeliveryStore> _deliveryToDeliveryEntityMapper;
-		private readonly IMapper<ItemView, Item> _itemToItemEntityMapper;
+		private readonly IDeliveryMapperService _deliveryService;
+		private readonly IStoreMapperService _storeService;
+		private readonly IItemMapperService _itemService;
 
-		public MapperService(IMapper<StoreView, Store> storeToStoreEntityMapper, 
-			IMapper<DeliveryView, DeliveryStore> deliveryToDeliveryEntityMapper,
-			IMapper<ItemView, Item> itemToItemEntityMapper)
+		public MapperService(IDeliveryMapperService deliveryService,
+			IStoreMapperService storeService, IItemMapperService itemService)
 		{
-			_storeToStoreEntityMapper = storeToStoreEntityMapper ?? throw new ArgumentNullException(nameof(storeToStoreEntityMapper));
-			_deliveryToDeliveryEntityMapper = deliveryToDeliveryEntityMapper ?? throw new ArgumentNullException(nameof(deliveryToDeliveryEntityMapper));
-			_itemToItemEntityMapper = itemToItemEntityMapper ?? throw new ArgumentNullException(nameof(itemToItemEntityMapper));
+			_deliveryService = deliveryService;
+			_storeService = storeService;
+			_itemService = itemService;
 		}
 
-		public Store Map(StoreView entity)
+		public Store Map(StoreViewModel entity)
 		{
-			var store = _storeToStoreEntityMapper.Map(entity);
+			var store = _storeService.Map(entity);
 
 			foreach (var s in entity.Deliveries)
 			{
-				var newSt = Map(s);
-				newSt.StoreName = store.Name;
-				store.Deliveries.Add(newSt);
+				var del = Map(s);
+				del.StoreName = store.Name;
+				store.Deliveries.Add(del);
 			}
 
 			foreach (var i in entity.Items)
 			{
-				store.Items.Add(Map(i));
+				var item = Map(i);
+				item.StoreName = store.Name;
+				store.Items.Add(item);
 			}
 
 			return store;
 		}
 
-		public DeliveryStore Map(DeliveryView entity)
+		public StoreViewModel Map(Store entity)
 		{
-			return _deliveryToDeliveryEntityMapper.Map(entity);
+			var storeViewModel = _storeService.Map(entity);
+
+			foreach (var s in entity.Deliveries)
+			{
+				storeViewModel.Deliveries.Add(Map(s));
+			}
+
+			foreach (var i in entity.Items)
+			{
+				storeViewModel.Items.Add(Map(i));
+			}
+
+			return storeViewModel;
 		}
 
-		public Item Map(ItemView entity)
+		public DeliveryStore Map(DeliveryViewModel entity)
 		{
-			return _itemToItemEntityMapper.Map(entity);
+			return _deliveryService.Map(entity);
+		}
+
+		public DeliveryViewModel Map(DeliveryStore entity)
+		{
+			return _deliveryService.Map(entity);
+		}
+
+		public ItemViewModel Map(Item entity)
+		{
+			return _itemService.Map(entity);
+		}
+
+		public Item Map(ItemViewModel entity)
+		{
+			return _itemService.Map(entity);
 		}
 	}
 }
